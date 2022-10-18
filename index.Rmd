@@ -1,0 +1,160 @@
+---
+title: "Pyriclab Study Area (Alcontar, Almería)"
+output: 
+  flexdashboard::flex_dashboard:
+    theme: yeti
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(flexdashboard)
+library(rgdal)
+library(leaflet) 
+library(leaflet.extras2)
+library(leafem)
+library(sf)
+library(tidyverse)
+library(raster)
+library(sp)
+library(lubridate)
+library(DT)
+```
+
+```{r}
+maxzoom <- 25 
+
+map_base <- leaflet() |>
+  addWMSTiles(
+    baseUrl = "http://www.ign.es/wms-inspire/ign-base?",
+    layers = "IGNBaseTodo",
+    group = "Basemap",
+    attribution = '© <a href="http://www.ign.es/ign/main/index.do" target="_blank">Instituto Geográfico Nacional de España</a>'
+  ) |>  
+  addWMSTiles("http://www.ideandalucia.es/services/toporaster10/wms?",
+    layers = "toporaster10",
+    group = "Topographical",
+    options = WMSTileOptions(
+      format = "image/png", 
+      transparent = FALSE, 
+      maxZoom = maxzoom),
+    attribution = '<a href="http://www.juntadeandalucia.es/institutodeestadisticaycartografia" target="_blank">Instituto de Estadística y Cartografía de Andalucía</a>'
+  ) |> 
+  addProviderTiles("Esri.WorldImagery", 
+                   group = "World Imagery (ESRI)",
+                   options = providerTileOptions(maxZoom = maxzoom)) |> 
+  addWMSTiles("http://www.ign.es/wms-inspire/pnoa-ma",
+    layers = "OI.OrthoimageCoverage",
+    group = "PNOA Máxima Actualidad",
+    options = WMSTileOptions(
+      format = "image/png", 
+      transparent = FALSE, 
+      maxZoom = maxzoom),
+    attribution = 'PNOA cedido por © <a href="http://www.ign.es/ign/main/index.do" target="_blank">Instituto Geográfico Nacional de España</a>'
+  ) |> 
+  addWMSTiles("http://www.ideandalucia.es/wms/mta10r_2001-2013?",
+    layers = "mta10r_2001-2013",
+    group = "topo2013",
+    options = WMSTileOptions(
+      format = "image/png", 
+      transparent = FALSE,
+      maxZoom = maxzoom),
+    attribution = '<a href="http://www.juntadeandalucia.es/institutodeestadisticaycartografia" target="_blank">Instituto de Estadística y Cartografía de Andalucía</a>'
+  ) |> 
+  addMiniMap(tiles = providers$Esri.WorldTopoMap, 
+             toggleDisplay = TRUE)
+  
+
+```
+
+```{r}
+geoquadrats <- st_read("data/GEOQUADRATS.shp", quiet = TRUE)
+geoquadrats <- st_transform(geoquadrats, crs = 4326)
+
+popup_geoquadrats <- paste0(
+  "<strong>Nombre:</strong> ", geoquadrats$NOMBRE,
+  "<br><strong>Tipo de Vegetación:</strong> ", geoquadrats$TIPO_VEG,
+  "<br><strong>Tratamiento Quema:</strong> ", geoquadrats$TRAT_QUEMA,
+  "<br><strong>Tratamiento Pasto:</strong> ", geoquadrats$TRAT_PASTO)
+
+pal <- colorFactor(palette = c("#ffff99", "#ff7f00", "#4daf4a"),
+                   levels = c("Espartal", "Aulagar","Lastonar"))
+
+
+parcela <- st_read("data/PARCELA I.shp", quiet = TRUE)
+parcela <- st_transform(parcela, crs = 4326)
+```
+
+
+Study Area
+===================================== 
+```{r}
+myext <- st_bbox(geoquadrats) |> as.vector()
+
+map_base |> 
+  fitBounds(myext[1], myext[2], myext[3], myext[4]) |> 
+  addMouseCoordinates() |> 
+  addPolygons(
+    data = parcela, 
+    group = "Parcela", 
+    stroke = TRUE, 
+    color = "yellow", 
+    weight = 3,
+    fillColor = "transparent"
+  ) |> 
+  addPolygons(
+    data = geoquadrats,
+    group = "Quadrats",
+    fillColor = pal(geoquadrats$TIPO_VEG), fillOpacity = 0.9,
+    stroke = TRUE,
+    color = "black", weight = 2,
+    popup = popup_geoquadrats,
+    label = ~NOMBRE,
+    labelOptions = labelOptions(
+      noHide = FALSE,
+      offset = c(0, 0),
+      textOnly = F,
+      style = list("color" = "black")
+    )
+  ) |> 
+    addLayersControl(
+    position = "bottomright",
+    baseGroups = c("World Imagery (ESRI)", "topo2013", "Topographical","PNOA Máxima Actualidad","Basemap"),
+    overlayGroups = c("Parcela","Quadrats"), 
+    options = layersControlOptions(collapsed = TRUE) 
+  ) 
+```
+
+
+Metadata Geoquadrats
+===================================== 
+```{r}
+geoquadrats |> 
+  as.data.frame() |> 
+  dplyr::select(-FID_2, -ID_QUADRAT, -OBSERVACIO,
+                -geometry, -NOM_ESTADI, -NOMGPS) |> 
+  datatable(rownames = FALSE,
+            filter = 'top', options = list(
+  pageLength = 20, autoWidth = TRUE
+))
+```
+
+
+
+Info
+=============================================================================
+
+**Visualización de las zonas de trabajo del proyecto Pyriclabs**
+
+### Equipo SERPAM-EEZ: 
+
+- **Ana Belén Robles Cruz**
+- **Maria Eugenia Ramos Font** <a href="https://orcid.org/0000-0002-4888-0401" target="orcid.widget"> <img src="https://info.orcid.org/wp-content/uploads/2019/11/orcid_16x16.png" alt="ORCID logo" width="16" height="16"/></a>
+-   **Mauro J. Tognetti Barbieri** 
+- [**Antonio J. Pérez-Luque**](https://github.com/ajpelu) <a href="https://orcid.org/0000-0002-1747-0469" target="orcid.widget"> <img src="https://info.orcid.org/wp-content/uploads/2019/11/orcid_16x16.png" alt="ORCID logo" width="16" height="16"/></a> (Visualización)
+
+
+
+ 
+
