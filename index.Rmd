@@ -62,6 +62,9 @@ map_base <- leaflet() |>
       maxZoom = maxzoom),
     attribution = '<a href="http://www.juntadeandalucia.es/institutodeestadisticaycartografia" target="_blank">Instituto de Estadística y Cartografía de Andalucía</a>'
   ) |> 
+  addTiles(urlTemplate = "http://serpam.github.io/ortomosaicos/221107_pyriclab/{z}/{x}/{-y}.png", 
+           options = tileOptions(minZoom = 15, maxZoom = 22, tms = TRUE), 
+           group = "RGB") |> 
   addMiniMap(tiles = providers$Esri.WorldTopoMap, 
              toggleDisplay = TRUE)
   
@@ -120,10 +123,12 @@ map_base |>
   ) |> 
     addLayersControl(
     position = "bottomright",
-    baseGroups = c("World Imagery (ESRI)", "topo2013", "Topographical","PNOA Máxima Actualidad","Basemap"),
+    baseGroups = c("World Imagery (ESRI)", "RGB", "topo2013", "Topographical","PNOA Máxima Actualidad","Basemap"),
     overlayGroups = c("Parcela","Quadrats"), 
     options = layersControlOptions(collapsed = TRUE) 
   ) 
+  
+  
 ```
 
 
