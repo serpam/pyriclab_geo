@@ -64,7 +64,11 @@ map_base <- leaflet() |>
   ) |> 
   addTiles(urlTemplate = "http://serpam.github.io/ortomosaicos/221107_pyriclab/{z}/{x}/{-y}.png", 
            options = tileOptions(minZoom = 15, maxZoom = 22, tms = TRUE), 
-           group = "RGB") |> 
+           group = "RGB_221107") |> 
+  addTiles(urlTemplate =
+             "http://serpam.github.io/ortomosaicos/ndvi_220617/{z}/{x}/{-y}.png", 
+           options = tileOptions(minZoom = 15, maxZoom = 22, tms = TRUE), 
+           group = "NDVI_220617") |> 
   addMiniMap(tiles = providers$Esri.WorldTopoMap, 
              toggleDisplay = TRUE)
   
@@ -123,10 +127,11 @@ map_base |>
   ) |> 
     addLayersControl(
     position = "bottomright",
-    baseGroups = c("World Imagery (ESRI)", "RGB", "topo2013", "Topographical","PNOA Máxima Actualidad","Basemap"),
-    overlayGroups = c("Parcela","Quadrats"), 
+    baseGroups = c("Basemap", "World Imagery (ESRI)", "topo2013", "Topographical","PNOA Máxima Actualidad"),
+    overlayGroups = c("Parcela","Quadrats", "NDVI_220617", "RGB_221107"), 
     options = layersControlOptions(collapsed = TRUE) 
-  ) 
+  ) |> 
+  hideGroup("NDVI_220617")
   
   
 ```
