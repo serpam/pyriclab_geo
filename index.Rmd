@@ -23,6 +23,16 @@ library(DT)
 ```
 
 ```{r}
+escala_ndvi <- read.table("data/escala_ndvi.txt", skip=2, header = FALSE, sep=",") 
+names(escala_ndvi) <- c("value", "r","g","b", "alpha", "label")
+colores_ndvi <- rgb(red = escala_ndvi$r/255, 
+                         green = escala_ndvi$g/255, 
+                         blue = escala_ndvi$b/255, 
+                         alpha = escala_ndvi$alpha/255)
+```
+
+
+```{r}
 maxzoom <- 25 
 
 map_base <- leaflet() |>
@@ -69,6 +79,10 @@ map_base <- leaflet() |>
              "http://serpam.github.io/ortomosaicos/ndvi_220617/{z}/{x}/{-y}.png", 
            options = tileOptions(minZoom = 15, maxZoom = 22, tms = TRUE), 
            group = "NDVI_220617") |> 
+  addTiles(urlTemplate =
+             "http://serpam.github.io/ortomosaicos/ndvi_221117/{z}/{x}/{-y}.png", 
+           options = tileOptions(minZoom = 15, maxZoom = 22, tms = TRUE), 
+           group = "NDVI_221117") |>
   addMiniMap(tiles = providers$Esri.WorldTopoMap, 
              toggleDisplay = TRUE)
   
@@ -128,12 +142,17 @@ map_base |>
     addLayersControl(
     position = "bottomright",
     baseGroups = c("Basemap", "World Imagery (ESRI)", "topo2013", "Topographical","PNOA Máxima Actualidad"),
-    overlayGroups = c("Parcela","Quadrats", "NDVI_220617", "RGB_221107"), 
+    overlayGroups = c("Parcela","Quadrats", 
+                      "NDVI_220617", "NDVI_221117", "RGB_221107"), 
     options = layersControlOptions(collapsed = TRUE) 
   ) |> 
-  hideGroup("NDVI_220617")
-  
-  
+  hideGroup("NDVI_220617") |>
+  hideGroup("NDVI_221117") |>
+  addLegend(colors = colores_ndvi, 
+            values = escala_ndvi$value, 
+            labels = escala_ndvi$label,
+            position = "bottomleft", 
+            title = "NDVI")
 ```
 
 
