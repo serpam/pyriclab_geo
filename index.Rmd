@@ -14,16 +14,19 @@ library(rgdal)
 library(leaflet) 
 library(leaflet.extras2)
 library(leafem)
+library(leaflet.opacity)
+library(leaflet.multiopacity)
 library(sf)
 library(tidyverse)
 library(raster)
 library(sp)
 library(lubridate)
 library(DT)
+library(htmlwidgets)
 ```
 
 ```{r}
-escala_ndvi <- read.table("data/escala_ndvi.txt", skip=2, header = FALSE, sep=",") 
+escala_ndvi <- read.table("data/escala_ndvi.txt", skip=2, header = FALSE, sep = ",") 
 names(escala_ndvi) <- c("value", "r","g","b", "alpha", "label")
 colores_ndvi <- rgb(red = escala_ndvi$r/255, 
                          green = escala_ndvi$g/255, 
@@ -74,19 +77,19 @@ map_base <- leaflet() |>
   ) |> 
   addTiles(urlTemplate = "http://serpam.github.io/ortomosaicos/221107_pyriclab/{z}/{x}/{-y}.png", 
            options = tileOptions(minZoom = 15, maxZoom = 22, tms = TRUE), 
-           group = "RGB_221107") |> 
+           group = "RGB_221107", layerId = "RGB_221107"
+           ) |> 
   addTiles(urlTemplate =
              "http://serpam.github.io/ortomosaicos/ndvi_220617/{z}/{x}/{-y}.png", 
            options = tileOptions(minZoom = 15, maxZoom = 22, tms = TRUE), 
-           group = "NDVI_220617") |> 
+           group = "NDVI_220617", layerId = "NDVI_220617") |> 
   addTiles(urlTemplate =
              "http://serpam.github.io/ortomosaicos/ndvi_221117/{z}/{x}/{-y}.png", 
            options = tileOptions(minZoom = 15, maxZoom = 22, tms = TRUE), 
-           group = "NDVI_221117") |>
+           group = "NDVI_221117", layerId = "NDVI_221117") |>
   addMiniMap(tiles = providers$Esri.WorldTopoMap, 
-             toggleDisplay = TRUE)
+             toggleDisplay = TRUE) 
   
-
 ```
 
 ```{r}
@@ -152,7 +155,11 @@ map_base |>
             values = escala_ndvi$value, 
             labels = escala_ndvi$label,
             position = "bottomleft", 
-            title = "NDVI")
+            title = "NDVI") |> 
+  addOpacityControls(group = c("RGB_221107", "NDVI_220617", "NDVI_221117"), 
+                     position = "topright", 
+                     title = "Opacidad")
+
 ```
 
 
