@@ -79,6 +79,10 @@ map_base <- leaflet() |>
            options = tileOptions(minZoom = 15, maxZoom = 22, tms = TRUE), 
            group = "RGB_221107", layerId = "RGB_221107"
            ) |> 
+  addTiles(urlTemplate = "http://serpam.github.io/ortomosaicos/221219_pyriclab/{z}/{x}/{-y}.png", 
+           options = tileOptions(minZoom = 15, maxZoom = 22, tms = TRUE), 
+           group = "RGB_221219", layerId = "RGB_221219"
+           ) |> 
   addTiles(urlTemplate =
              "http://serpam.github.io/ortomosaicos/ndvi_220617/{z}/{x}/{-y}.png", 
            options = tileOptions(minZoom = 15, maxZoom = 22, tms = TRUE), 
@@ -102,7 +106,7 @@ popup_geoquadrats <- paste0(
   "<br><strong>Tratamiento Quema:</strong> ", geoquadrats$TRAT_QUEMA,
   "<br><strong>Tratamiento Pasto:</strong> ", geoquadrats$TRAT_PASTO)
 
-pal <- colorFactor(palette = c("#ffff99", "#ff7f00", "#4daf4a"),
+pal <- colorFactor(palette = c("orange", "red", "blue"),
                    levels = c("Espartal", "Aulagar","Lastonar"))
 
 
@@ -130,9 +134,9 @@ map_base |>
   addPolygons(
     data = geoquadrats,
     group = "Quadrats",
-    fillColor = pal(geoquadrats$TIPO_VEG), fillOpacity = 0.9,
+    fillColor = "NULL", #pal(geoquadrats$TIPO_VEG), fillOpacity = 0.5,
     stroke = TRUE,
-    color = "black", weight = 2,
+    color = pal(geoquadrats$TIPO_VEG), weight = 4,
     popup = popup_geoquadrats,
     label = ~NOMBRE,
     labelOptions = labelOptions(
@@ -146,17 +150,19 @@ map_base |>
     position = "bottomright",
     baseGroups = c("Basemap", "World Imagery (ESRI)", "topo2013", "Topographical","PNOA Máxima Actualidad"),
     overlayGroups = c("Parcela","Quadrats", 
-                      "NDVI_220617", "NDVI_221117", "RGB_221107"), 
+                      "NDVI_220617", "NDVI_221117", "RGB_221107", "RGB_221219"), 
     options = layersControlOptions(collapsed = TRUE) 
   ) |> 
+  hideGroup("NDVI_221219") |>
   hideGroup("NDVI_220617") |>
-  hideGroup("NDVI_221117") |>
+  hideGroup("NDVI_221117") |> 
   addLegend(colors = colores_ndvi, 
             values = escala_ndvi$value, 
             labels = escala_ndvi$label,
             position = "bottomleft", 
             title = "NDVI") |> 
-  addOpacityControls(group = c("RGB_221107", "NDVI_220617", "NDVI_221117"), 
+  addOpacityControls(group = c("RGB_221107","RGB_221219", 
+                               "NDVI_220617", "NDVI_221117"), 
                      position = "topright", 
                      title = "Opacidad")
 
@@ -183,6 +189,11 @@ Info
 
 **Visualización de las zonas de trabajo del proyecto Pyriclabs**
 
+### Créditos
+Este visor está en construcción y se irán añadiendo mas funcionalidades de forma contínua. Si se utiliza, por favor citarlo del siguiente modo: 
+
+Pérez-Luque, AJ; Tognetti Barbieri, MJ; Ramos-Font, ME & Robles Cruz AB. (2022). Visor espacial del LivingLab Alcontar-Pyriclab. Versión 0.1. https://serpam.github.io/pyriclab_geo/ f
+
 ### Equipo SERPAM-EEZ: 
 
 - **Ana Belén Robles Cruz**
@@ -192,5 +203,12 @@ Info
 
 
 
- 
+### Proyectos 
+
+* MICINN through European Regional Development Fund *SUMHAL, LIFEWATCH-2019-09-CSIC-13, POPE 2014-2020*. More info about the [SUMHAL](https://lifewatcheric-sumhal.csic.es/) project (Sustainability for Mediterranean Hotspots in Andalusia integrating LifeWatch ERIC).  
+
+* PYRICLABS Grant *PID2020-116786RB-C32* funded by MCIN/AEI/ 10.13039/501100011033. 
+
+
+
 
