@@ -3,7 +3,7 @@
 Este visor está en construcción y se irán añadiendo mas funcionalidades de forma contínua. Si se utiliza, por favor citarlo del siguiente modo: 
 
 ### Créditos
-Pérez-Luque, AJ; Tognetti Barbieri, MJ; Ramos-Font, ME & Robles Cruz AB. (2022). Visor espacial del LivingLab Alcontar-Pyriclab. Versión 0.1. https://serpam.github.io/pyriclab_geo/. doi: [10.5281/zenodo.8027134(https://doi.org/10.5281/zenodo.8027134)
+Pérez-Luque, AJ; Tognetti Barbieri, MJ; Ramos-Font, ME & Robles Cruz AB. (2022). Visor espacial del LivingLab Alcontar-Pyriclab. Versión 0.1. https://serpam.github.io/pyriclab_geo/. doi: [10.5281/zenodo.8027134](https://doi.org/10.5281/zenodo.8027134)
 
 ### Equipo SERPAM-EEZ: 
 
