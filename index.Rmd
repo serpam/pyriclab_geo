@@ -1,5 +1,5 @@
 ---
-title: "Pyriclab Study Area (Alcontar, Almería)"
+title: "SUMHAL - Pyriclab Study Area (Alcontar, Almería)"
 output: 
   flexdashboard::flex_dashboard:
     theme: yeti
